@@ -11,10 +11,6 @@ template.innerHTML = `
         height: 300px;
     }
 
-    h2 {
-      background-color: pink;
-    }
-
     ul {
         display: flex;
         flex-flow: row wrap;

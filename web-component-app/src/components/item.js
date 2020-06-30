@@ -103,7 +103,6 @@ class ItemItem extends HTMLElement {
         this.setAttribute("stars", v);
     }
     set ratingAmount(v) {
-        console.log(v)
         this.setAttribute("ratingAmount", v);
     }
     get realPrice() {
@@ -119,76 +118,48 @@ class ItemItem extends HTMLElement {
         return this.getAttribute('postform');
     }
 
-    // async refreshRating(id, other) {
-    //     const response = await getItem(id);
-    //     const json = await response.json();
-    //     console.log(json);
-    //     other.stars = json.rating;
-    //     other.ratingAmount = json.ratingAmount;
-    // }
-
-    refreshRating(amount, rating, _this) {
-        _this.ratingAmount = amount;
-        _this.stars = rating;
-        _this.$postForm.innerHTML = "<p>Already Rated!</p>"
-        _this.render();
-        // console.log(_this)
-
-    }
-
-    attributeChangedCallback(name, oldVal, newVal) {
+    refreshRating(amount, rating) {
+        this.ratingAmount = amount;
+        this.stars = rating;
+        this.$postForm.innerHTML = "<p>Already Rated!</p>"
         this.render();
     }
 
+    attributeChangedCallback(name, oldVal, newVal) {
+        // this.render();
+    }
 
+    async sendRating() {
+        let url = `http://localhost:8000/rating/${this.postForm}/`;
+        // let _this = this;
+        const rawResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ "rating": this.$select.options[this.$select.selectedIndex].value})
+        });
+        let responseJson = await rawResponse.json();
+        this.refreshRating(responseJson[0].total_rating_amount, responseJson[0].rating);   
+    }
 
-    render() {
-        let star;
-        this.$title.innerHTML = this.name;
-        this.$description.innerHTML = this.description;
-        this.$ratingAmount.innerHTML = this.ratingAmount;
+    connectedCallback() {
+        const star = document.createElement('star-rating');  
+        this.$stars.appendChild(star);
+        this.$stars.firstElementChild.setAttribute("stars", this.stars / this.ratingAmount);  
+        this.$button.addEventListener('click', this.sendRating.bind(this))
         this.$originalPrice.innerHTML = this.originalPrice;
         this.$realPrice.innerHTML = this.realPrice;
+        this.$title.innerHTML = this.name;
+        this.$description.innerHTML = this.description;
         this.$discountPercentage.innerHTML = `${this.discountPercentage}%`;
         this.$img.src = this.img;
-        console.log(this.postForm);
-        // console.log(this);
+        this.render()
+    }
 
-        if (!this.$stars.hasChildNodes() && this.stars !== null && this.ratingAmount !== null) {
-            star = document.createElement('star-rating');
-            star.setAttribute("stars", this.stars / this.ratingAmount);    
-            this.$stars.appendChild(star);
-        }
-
-        if (this.$stars.hasChildNodes()) { 
-            this.$stars.firstElementChild.setAttribute("stars", this.stars / this.ratingAmount);  
-        }
-        
-        // if (this.postForm !== null) {
-        //     this.$postForm.setAttribute("action", `http://localhost:8000/rating/${this.postForm}/`);
-        // }
-        let mySelect = this.$select;
-        let myId;
-        let myRefresh = this.refreshRating;
-        let other = this;
-        if (this.postForm !== null && !this.listened) {
-            myId = this.postForm;
-            this.listened = true;
-            this.$button.addEventListener('click', async function() {
-                let url = `http://localhost:8000/rating/${myId}/`;
-                const rawResponse = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                    'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ "rating": mySelect.options[mySelect.selectedIndex].value})
-                });
-                let responseJson = await rawResponse.json();
-                myRefresh(responseJson[0].total_rating_amount, responseJson[0].rating, other);                
-            })
-        }
-
-
+    render() {
+        this.$ratingAmount.innerHTML = this.ratingAmount;
+        this.$stars.firstElementChild.setAttribute("stars", this.stars / this.ratingAmount);  
     }
 }
 
