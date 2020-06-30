@@ -22,4 +22,6 @@ urlpatterns = [
     path('items/', item_views.item_list),
     path('items/<int:id>/', item_views.item_get),
     path('rating/<int:id>/', item_views.new_item_rate),
+    path('user/new/', item_views.new_user),
+    path('user/get/', item_views.get_user)
 ]
