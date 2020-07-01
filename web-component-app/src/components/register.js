@@ -9,7 +9,7 @@ template.innerHTML = `
 
 
     <!-- E-mail -->
-    <input type="text" id="username" class="form-control mb-4" placeholder="Username">
+    <input type="text" id="username" class="form-control mb-4" placeholder="Username" autocomplete="off">
 
     <!-- Password -->
     <input type="password" id="password" class="form-control" placeholder="Password" aria-describedby="defaultRegisterFormPasswordHelpBlock">

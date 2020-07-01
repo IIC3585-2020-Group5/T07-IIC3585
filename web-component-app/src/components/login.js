@@ -9,7 +9,7 @@ template.innerHTML = `
 
     <!-- Username -->
     <div class="input-group">
-        <input type="text" id="username" class="form-control mb-4" placeholder="Username" name="username">
+        <input type="text" id="username" class="form-control mb-4" placeholder="Username" name="username" autocomplete="off">
         <div class="invalid-feedback">
             Invalid Username or Password
         </div>
